@@ -1,28 +1,57 @@
 
+
+--- Window Class ---
 local {} ->
+  -- Apply the `GtkWidgetNative` decorator with 
+  -- the `gtk_application_window_new` C operation
   @GtkWidgetNative('gtk_application_window_new')
   Window
-do
+do -- Indent into a do block to domain into `Window
 
-  function Window:set_title(title)
-    Gtk.ffi.gtk_window_set_title(ffi.cast("GtkWindow*", self.ptr), title)
-    return self
-  end
 
-  function Window:set_default_size(width, height)
-    Gtk.ffi.gtk_window_set_default_size(ffi.cast("GtkWindow*", self.ptr), width, height)
-    return self
-  end
+  --- Window::set_title ---
+  -- A class method to set the title
+  (title) 
+  @GtkWidgetOperation({
+    operation = 'gtk_window_set_title',
+    cast = 'GtkWindow*',
+    arguments = {false},
+  })
+  @GtkWidgetReturnSelf()
+  Window:set_title => end
 
-  function Window:set_child(child)
-    Gtk.ffi.gtk_window_set_child(ffi.cast("GtkWindow*", self.ptr), child.ptr)
-    return self
-  end
 
-  function Window:show()
-    Gtk.ffi.gtk_widget_show(self.ptr)
-    return self
-  end
+  --- Window::set_default_size ---
+  -- A class method to set default width and height
+  (width, height) 
+  @GtkWidgetOperation({
+    operation = 'gtk_window_set_default_size',
+    cast = 'GtkWindow*',
+    arguments = {false, false},
+  })
+  @GtkWidgetReturnSelf()
+  Window:set_default_size => end
+
+  --- Window::set_child ---
+  -- Set the child of the window (typically to vbox or hbox)
+  (child) 
+  @GtkWidgetOperation({
+    operation = 'gtk_window_set_child',
+    cast = 'GtkWindow*',
+    arguments = {true},
+  })
+  @GtkWidgetReturnSelf()
+  Window:set_child => end
+
+  --- Window::show ---
+  -- Make the window visible
+  ()
+  @GtkWidgetOperation({
+    operation = 'gtk_widget_show',
+    arguments = {false, false},
+  })
+  @GtkWidgetReturnSelf()
+  Window:show => end
 
 end
 
