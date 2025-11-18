@@ -10,13 +10,14 @@ local activate_cb = ffi.cast("GCallback",
     win:set_title("hello")
     win:set_default_size(400, 200)
 
-    local vbox = Gtk.Box()
+    local vbox = Gtk.Box {
+      children = {
+        Gtk.Label("sksks"),
+        Gtk.Label("works")
+      }
+    }
 
-    local label1 = Gtk.Label("sksks")
-    local label2 = Gtk.Label("works")
-
-    vbox:append(label1)
-    vbox:append(label2)
+    vbox:append(Gtk.Label('hi'))
 
     win:set_child(vbox)
 

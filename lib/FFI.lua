@@ -36,6 +36,8 @@ into_global('GtkWidgetNative', function(name)
       else
         self.ptr = f(...)
       end
+
+      self.id = uuid.v4()
     end
     return _class
   end
@@ -55,6 +57,28 @@ into_global('GtkWidgetOptionOverride', function(name, mapper)
       _class.__options_map = {}
     end
     _class.__options_map[name] = mapper
+    return _class
+  end
+end)
+
+into_global('GtkWidgetHandleChildren', function(name)
+  return function(_class)
+    function _class:init()
+      if self.child then
+        self.children = { self.child }
+        self.child = nil
+      end
+      if self.children then
+        local children = self.children
+        if not instanceof(self.children, Vec) then
+          children = Vec(self.children)
+        end
+        foreach(children.items)(function(child)
+          self[name](self, child)
+        end)
+        self.children = children
+      end
+    end
     return _class
   end
 end)
