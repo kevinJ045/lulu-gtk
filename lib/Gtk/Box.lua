@@ -1,3 +1,7 @@
+local {
+  Vertical,
+  Horizontal
+} -< @enum_indexed(0) Orientation
 
 local {
   @default_to('vertical')
@@ -11,28 +15,20 @@ local {
   @GtkWidgetWithOptions('orientation', 'spacing')
   @GtkWidgetOptionOverride(
     'orientation',
-    function(o)
-      return in if o == "horizontal" then return 0 else return 1 end
-    end
+    Orientation::index
   )
   @GtkWidgetHandleChildren('append')
   Box
 do
 
-  function Box:append(child)
-    Gtk.ffi.gtk_box_append(ffi.cast("GtkBox*", self.ptr), child.ptr)
-    if not self.children then
-      self.children = Vec()
-    end
-    if not instanceof(self.children, Vec) then
-      self.children = Vec(self.children)
-    end
-    local found = self.children:find((e) => return e.id == child.id end)
-    if not found then
-      self.children:push(child)
-    end
-    return self
-  end
+  @GtkWidgetOperation({
+    operation = 'gtk_box_append',
+    cast = 'GtkBox*',
+    arguments = {true},
+  })
+  @GtkWidgetChildrenHandler(1)
+  @GtkWidgetReturnSelf()
+  function Box:append(child) end
 
 end
 
