@@ -40,6 +40,8 @@ int g_application_run(GApplication* application, int argc, char** argv);
 
 GtkWidget* gtk_box_new(GtkOrientation orientation, int spacing);
 void gtk_box_append(GtkBox* box, GtkWidget* child);
+void gtk_box_prepend(GtkBox* box, GtkWidget* child);
+void gtk_box_remove(GtkBox* box, GtkWidget* child);
 
 GtkWidget*
 gtk_label_new (

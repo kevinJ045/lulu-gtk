@@ -17,7 +17,11 @@ local activate_cb = ffi.cast("GCallback",
       }
     }
 
-    vbox:append(Gtk.Label('hi'))
+    local label = Gtk.Label('hi')
+
+    vbox:append(label)
+
+    print(vbox.children:len())
 
     win:set_child(vbox)
 

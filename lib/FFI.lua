@@ -126,7 +126,7 @@ into_global('GtkWidgetReturnSelf', function()
   end
 end)
 
-into_global('GtkWidgetChildrenHandler', function(idx)
+into_global('GtkWidgetChildrenHandler', function(idx, shift)
   return function(_class, func)
     return function(self, ...)
       local child = ({...})[idx]
@@ -138,8 +138,28 @@ into_global('GtkWidgetChildrenHandler', function(idx)
       end
       local found = self.children:find((e) => return e.id == child.id end)
       if not found then
-        self.children:push(child)
+        if shift then
+          self.children:insert(1, child)
+        else
+          self.children:push(child)
+        end
       end
+      return func(self, ...)
+    end
+  end
+end)
+
+into_global('GtkWidgetChildrenRemover', function(idx)
+  return function(_class, func)
+    return function(self, ...)
+      local child = ({...})[idx]
+      if not self.children then
+        self.children = Vec()
+      end
+      if not instanceof(self.children, Vec) then
+        self.children = Vec(self.children)
+      end
+      self.children:remove((e) => return e.id == child.id end)
       return func(self, ...)
     end
   end
