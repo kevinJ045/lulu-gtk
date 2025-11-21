@@ -14,11 +14,14 @@ local {
   #children
 } ->
   @GtkWidgetNative('gtk_box_new')
-  @GtkWidgetWithOptions('orientation', 'spacing')
-  @GtkWidgetOptionOverride(
-    'orientation',
-    Orientation::index
-  )
+  @GtkWidgetWithOptions({
+    orientation = gtk_option_mapper {
+      cast = "GtkBox*",
+      mapper = Orientation::index,
+      at = 1
+    },
+    spacing = 2
+  }, 'gtk_box')
   @GtkWidgetHandleChildren('append')
   Box
 do

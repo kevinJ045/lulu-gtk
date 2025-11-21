@@ -4,6 +4,8 @@ using {
 
 local callbacks = {}
 
+local state = Gtk.State("haha")
+
 local activate_cb = ffi.cast("GCallback",
   function(app, user_data)
     local win = Gtk.Window(app)
@@ -17,7 +19,9 @@ local activate_cb = ffi.cast("GCallback",
       }
     }
 
-    local label = Gtk.Label('hi')
+    local label = Gtk.Label(state)
+
+    state:set("nooo")
 
     vbox:append(label)
 

@@ -17,6 +17,23 @@ typedef enum _GtkOrientation {
   GTK_ORIENTATION_HORIZONTAL = 0,
   GTK_ORIENTATION_VERTICAL   = 1
 } GtkOrientation;
+typedef enum GtkJustification {
+  GTK_JUSTIFY_LEFT,
+  GTK_JUSTIFY_RIGHT,
+  GTK_JUSTIFY_CENTER,
+  GTK_JUSTIFY_FILL
+} GtkJustification;
+typedef enum _PangoWrapMode {
+  PANGO_WRAP_WORD,
+  PANGO_WRAP_CHAR,
+  PANGO_WRAP_WORD_CHAR
+} PangoWrapMode;
+typedef enum {
+  PANGO_ELLIPSIZE_NONE,
+  PANGO_ELLIPSIZE_START,
+  PANGO_ELLIPSIZE_MIDDLE,
+  PANGO_ELLIPSIZE_END
+} PangoEllipsizeMode;
 
 GtkApplication* gtk_application_new(const char* app_id, guint flags);
 
@@ -43,7 +60,14 @@ void gtk_box_append(GtkBox* box, GtkWidget* child);
 void gtk_box_prepend(GtkBox* box, GtkWidget* child);
 void gtk_box_remove(GtkBox* box, GtkWidget* child);
 
-GtkWidget*
-gtk_label_new (
-  const char* str
-);
+GtkWidget* gtk_label_new (const char* str);
+void gtk_label_set_text(GtkLabel* label, const char* str);
+void gtk_label_set_markup(GtkLabel* label, const char* str);
+void gtk_label_set_justify(GtkLabel* label, GtkJustification jtype);
+void gtk_label_set_wrap(GtkLabel* label, gboolean wrap);
+void gtk_label_set_wrap_mode(GtkLabel* label, PangoWrapMode mode);
+void gtk_label_set_selectable(GtkLabel* label, gboolean setting);
+void gtk_label_set_ellipsize(GtkLabel* label, PangoEllipsizeMode mode);
+void gtk_label_set_xalign(GtkLabel* label, float xalign);
+void gtk_label_set_yalign(GtkLabel* label, float yalign);
+void gtk_label_set_lines(GtkLabel* label, int lines);

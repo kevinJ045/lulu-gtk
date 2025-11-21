@@ -20,7 +20,8 @@ local Gtk = {}
 using {
   dylib"@gtk-4""gtk"(
     include_string! "../include/gtk4.h";
-  )
+  ),
+  lulib { state, "./State.lua" }
 }
 
 --- The interlop
@@ -54,16 +55,21 @@ into_global('GtkWidgetNative', function(name)
       if _class.__options then
         local arg = {}
         local o = args[1] or {}
-        for _, v in pairs(_class.__options) do
+        for _, name in pairs(_class.__options) do
           local omap = in if _class.__options_map then
-            return _class.__options_map[v]
+            return _class.__options_map[name]
           end
-          if o[v] then
-            self[v] = o[v]
+          if o[name] then
+            self[name] = o[name]
           end
-          table.insert(arg, in if omap then
-            return omap(self[v])
-          else return self[v] end)
+
+          local v = in if omap then
+            return omap(state.get_state_value(self, name, self[name]))
+          else
+            return state.get_state_value(self, name, self[name])
+          end
+
+          table.insert(arg, v)
         end
         self.ptr = f(unpack(arg))
       else
@@ -76,20 +82,96 @@ into_global('GtkWidgetNative', function(name)
   end
 end)
 
+local function do_gtk_operations(self, args, options)
+  local item = in if options.cast then
+    return ffi.cast(options.cast, self.ptr)
+  else
+    return self.ptr
+  end
+
+  local arguments = in for i, v in pairs(options.arguments or {}) do
+    if v == true then
+      collect(args[i].ptr)
+    elseif type(v) == "function" then
+      collect(v(args[i]))
+    else
+      collect(args[i])
+    end
+  end
+
+  print(options.operation, #arguments)
+
+  Gtk.ffi[options.operation](item, unpack(arguments))
+end
+
 into_global('GtkWidgetWithOptions', function(...)
   local opts = {...}
   return function(_class)
-    _class.__options = opts
-    return _class
-  end
-end)
+    if type(opts[1]) == "string" then
+      _class.__options = opts
+    elseif type(opts[1]) == "table" then
+      if type(opts[1][1]) == "string" then
+        opts[1] = { 
+          [opts[1][1]] = 1
+        }
+      end
+      _class.__option_setter_index = opts[2]
+      _class.__options = {}
+      local idx = 0
+      local default_cast = opts[3]
 
-into_global('GtkWidgetOptionOverride', function(name, mapper)
-  return function(_class)
-    if not _class.__options_map then
-      _class.__options_map = {}
+      for name, mapper in pairs(opts[1]) do
+        if not _class.__options_map then
+          _class.__options_map = {}
+        end
+
+        if type(mapper) == "function" or type(mapper) == "table" then
+          _class.__options_map[name] = mapper
+          _class.__options[
+            type(mapper) == "table" and mapper.at or idx
+          ] = name
+        else
+          _class.__options[mapper or idx] = name
+        end
+
+        idx = #_class.__options
+
+        _class[f"set_{name}"] = function(self, v)
+          local val = state.get_state_value(self, name, in if _class.__options_map and _class.__options_map[name] then
+            return _class.__options_map[name](v)
+          else
+            return v
+          end)
+
+          local options = in if type(mapper) == "table" then
+            if not mapper.operation then
+              mapper.operation = f"{_class.__option_setter_index}_set_{name}"
+            end
+
+            if not mapper.arguments then
+              mapper.arguments = {false}
+            end
+            
+            return mapper
+          else
+            return {
+              operation = f"{_class.__option_setter_index}_set_{name}",
+              arguments = {false}
+            }
+          end
+
+          if default_cast and not options.cast then
+            options.cast = default_cast
+          end
+
+          self[name] = v
+
+          do_gtk_operations(self, {val}, options)
+          return self
+        end
+        
+      end
     end
-    _class.__options_map[name] = mapper
     return _class
   end
 end)
@@ -169,26 +251,36 @@ into_global('GtkWidgetOperation', function(options)
   return function(_class, func)
     return function(self, ...)
       local args = {...}
-      if options.operation then
-        local item = in if options.cast then
-          return ffi.cast(options.cast, self.ptr)
-        else
-          return self.ptr
-        end
+      local result = do_gtk_operations(self, args, options)
 
-        local arguments = in for i, v in pairs(options.arguments or {}) do
-          if v == true then
-            collect(args[1].ptr)
-          else
-            collect(args[1])
-          end
-        end
-
-        Gtk.ffi[options.operation](item, unpack(arguments))
+      local returns = nil
+      if options.collect then
+        returns = func(self, result, ...)
+      else
+        returns = func(self, ...)
       end
-      return func(self, ...)
+
+      if options.returns then
+        return result
+      end
+      
+      return returns
     end
   end
 end)
+
+into_global('gtk_option_mapper', function(option)
+  return setmetatable(option, {
+    __call = function(t, v)
+      if option.mapper then
+        return option.mapper(v)
+      else
+        return v
+      end
+    end
+  })
+end)
+
+Gtk.State = state.State
 
 return into_global('Gtk', Gtk)
