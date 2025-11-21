@@ -29,19 +29,17 @@ local activate_cb = ffi.cast("GCallback",
       justify = "right"
     })
 
-    local button = Gtk.Button({
-      markup = state,
-      selectable = true,
-      justify = "right"
-    })
-
     state:set("<b>nooo</b>")
+
+    local button = Gtk.Button {
+      child = label
+    }
 
     button:connect("clicked", function()
       print("hii")
     end)
 
-    vbox:append(label)
+    vbox:append(button)
 
     print(vbox.children:len())
 

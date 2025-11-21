@@ -82,3 +82,4 @@ GtkWidget* gtk_button_new_with_label (const char* str);
 GtkWidget* gtk_button_new_from_icon_name (const char* str);
 GtkWidget* gtk_button_new_from_icon_name (const char* str);
 void gtk_button_set_label (GtkButton* button, const char* label);
+void gtk_button_set_child (GtkButton* button, GtkWidget* child);
