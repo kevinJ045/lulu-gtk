@@ -16,14 +16,19 @@ local activate_cb = ffi.cast("GCallback",
     local vbox = Gtk.Box {
       orientation = state2,
       children = {
-        Gtk.Label("sksks"),
-        Gtk.Label("works")
+        Gtk.Label { text = "sksks" },
+        Gtk.Label { text = "works" }
       }
     }
 
-    local label = Gtk.Label(state)
+    state2:set("vertical")
 
-    state:set("nooo")
+    local label = Gtk.Label({
+      markup = state,
+      justify = "right"
+    })
+
+    state:set("<b>nooo</b>")
 
     vbox:append(label)
 

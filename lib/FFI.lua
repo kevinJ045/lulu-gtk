@@ -29,6 +29,38 @@ using {
 -- direct ffi access from `Gtk` namespace. 
 Gtk.ffi = gtk
 
+local function emmasivate_options(self, option_map, options, each, onlyif)
+  local o = options
+  for _, name in pairs(option_map) do
+
+    local continue = true
+
+    if onlyif then
+      if o[name] == nil then
+        continue = false
+      end
+    end
+
+    if continue then
+      local omap = in if self.__options_map then
+        return self.__options_map[name]
+      end
+      
+      if o[name] != nil then
+        self[name] = o[name]
+      end
+
+      local v = in if omap then
+        return omap(state.get_state_value(self, name, self[name]))
+      else
+        return state.get_state_value(self, name, self[name])
+      end
+
+      each(name, v, self[name])
+    end
+  end
+end
+
 ----<| Decorators |>----
 ---< Explanation:
 -- Decorators in lulu are functions that
@@ -54,29 +86,23 @@ into_global('GtkWidgetNative', function(name)
       local f = Gtk.ffi[name]
       if _class.__options then
         local arg = {}
-        local o = args[1] or {}
-        for _, name in pairs(_class.__options) do
-          local omap = in if _class.__options_map then
-            return _class.__options_map[name]
-          end
-          if o[name] then
-            self[name] = o[name]
-          end
-
-          local v = in if omap then
-            return omap(state.get_state_value(self, name, self[name]))
-          else
-            return state.get_state_value(self, name, self[name])
-          end
-
-          table.insert(arg, v)
-        end
+        emmasivate_options(self, _class.__options, args[1], function(_, val)
+          table.insert(arg, val)
+        end)
         self.ptr = f(unpack(arg))
       else
         self.ptr = f(...)
       end
 
       self.id = uuid.v4()
+
+      if _class.__options_provided then
+        emmasivate_options(self, _class.__options_provided, args[1], function(name, _, oval)
+          if oval then
+            self[f"set_{name}"](self, oval)
+          end
+        end, false)
+      end
     end
     return _class
   end
@@ -99,9 +125,11 @@ local function do_gtk_operations(self, args, options)
     end
   end
 
-  print(options.operation, #arguments)
-
-  Gtk.ffi[options.operation](item, unpack(arguments))
+  try_catch! {
+    Gtk.ffi[options.operation](item, unpack(arguments))
+  }, {
+    error(f"Error on gtk operation: {options.operation}: {err}")
+  }
 end
 
 into_global('GtkWidgetWithOptions', function(...)
@@ -110,13 +138,9 @@ into_global('GtkWidgetWithOptions', function(...)
     if type(opts[1]) == "string" then
       _class.__options = opts
     elseif type(opts[1]) == "table" then
-      if type(opts[1][1]) == "string" then
-        opts[1] = { 
-          [opts[1][1]] = 1
-        }
-      end
       _class.__option_setter_index = opts[2]
       _class.__options = {}
+      _class.__options_provided = {}
       local idx = 0
       local default_cast = opts[3]
 
@@ -125,11 +149,18 @@ into_global('GtkWidgetWithOptions', function(...)
           _class.__options_map = {}
         end
 
-        if type(mapper) == "function" or type(mapper) == "table" then
+        if mapper == -1 then
+          table.insert(_class.__options_provided, name)
+        elseif type(mapper) == "function" or type(mapper) == "table" then
           _class.__options_map[name] = mapper
-          _class.__options[
-            type(mapper) == "table" and mapper.at or idx
-          ] = name
+
+          if type(mapper) == "table" and mapper.at == -1 then
+            table.insert(_class.__options_provided, name)
+          else
+            _class.__options[
+              type(mapper) == "table" and mapper.at or idx
+            ] = name
+          end
         else
           _class.__options[mapper or idx] = name
         end
@@ -269,7 +300,25 @@ into_global('GtkWidgetOperation', function(options)
   end
 end)
 
-into_global('gtk_option_mapper', function(option)
+into_global('gtk_option_mapper', function(option, mapper)
+
+  if type(mapper) == "number" then
+    mapper = {
+      at = mapper
+    }
+  end
+
+  if type(option) == "function" and not mapper then
+    mapper = {
+      at = -1
+    }
+  end
+
+  if mapper then
+    mapper.mapper = option
+    option = mapper
+  end
+
   return setmetatable(option, {
     __call = function(t, v)
       if option.mapper then

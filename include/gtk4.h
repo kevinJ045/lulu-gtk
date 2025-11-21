@@ -10,6 +10,7 @@ typedef struct _GtkWidget GtkWidget;
 typedef struct _GtkWindow GtkWindow;
 typedef struct _GtkBox GtkBox;
 typedef struct _GtkLabel GtkLabel;
+typedef struct _GtkOrientable GtkOrientable;
 
 typedef void (*GCallback)(GtkApplication*, gpointer);
 
@@ -59,6 +60,9 @@ GtkWidget* gtk_box_new(GtkOrientation orientation, int spacing);
 void gtk_box_append(GtkBox* box, GtkWidget* child);
 void gtk_box_prepend(GtkBox* box, GtkWidget* child);
 void gtk_box_remove(GtkBox* box, GtkWidget* child);
+void gtk_box_remove(GtkBox* box, GtkWidget* child);
+void gtk_orientable_set_orientation(GtkOrientable* orientable, GtkOrientation orientation);
+void gtk_box_set_spacing(GtkBox* box, int spacing);
 
 GtkWidget* gtk_label_new (const char* str);
 void gtk_label_set_text(GtkLabel* label, const char* str);

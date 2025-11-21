@@ -1,8 +1,6 @@
 local {
-  @enum_index(1)
-  Vertical,
-  @enum_index(0)
-  Horizontal
+  @enum_index(0) Horizontal,
+  @enum_index(1) Vertical
 } -< Orientation
 
 local {
@@ -16,12 +14,13 @@ local {
   @GtkWidgetNative('gtk_box_new')
   @GtkWidgetWithOptions({
     orientation = gtk_option_mapper {
-      cast = "GtkBox*",
+      cast = "GtkOrientable*",
       mapper = Orientation::index,
-      at = 1
+      at = 1,
+      operation = "gtk_orientable_set_orientation"
     },
     spacing = 2
-  }, 'gtk_box')
+  }, 'gtk_box', 'GtkBox*')
   @GtkWidgetHandleChildren('append')
   Box
 do
