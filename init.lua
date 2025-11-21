@@ -31,9 +31,7 @@ local activate_cb = ffi.cast("GCallback",
 
     state:set("<b>nooo</b>")
 
-    local button = Gtk.Button {
-      child = label
-    }
+    local button = Gtk.Button()
 
     button:connect("clicked", function()
       print("hii")

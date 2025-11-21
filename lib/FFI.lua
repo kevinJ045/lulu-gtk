@@ -30,7 +30,7 @@ using {
 Gtk.ffi = gtk
 
 local function emmasivate_options(self, option_map, options, each, onlyif)
-  local o = options
+  local o = options or {}
   for _, name in pairs(option_map) do
 
     local continue = true
