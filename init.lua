@@ -5,6 +5,7 @@ using {
 local callbacks = {}
 
 local state = Gtk.State("haha")
+local state2 = Gtk.State("horizontal")
 
 local activate_cb = ffi.cast("GCallback",
   function(app, user_data)
@@ -13,6 +14,7 @@ local activate_cb = ffi.cast("GCallback",
     win:set_default_size(400, 200)
 
     local vbox = Gtk.Box {
+      orientation = state2,
       children = {
         Gtk.Label("sksks"),
         Gtk.Label("works")
