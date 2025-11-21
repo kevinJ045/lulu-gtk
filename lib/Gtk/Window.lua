@@ -1,11 +1,10 @@
 
-
 --- Window Class ---
 local {} ->
   -- Apply the `GtkWidgetNative` decorator with 
   -- the `gtk_application_window_new` C operation
   @GtkWidgetNative('gtk_application_window_new')
-  Window
+  Window:GtkWidget
 do -- Indent into a do block to domain into `Window
 
 

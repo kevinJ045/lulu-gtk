@@ -25,10 +25,15 @@ local activate_cb = ffi.cast("GCallback",
 
     local label = Gtk.Label({
       markup = state,
+      selectable = true,
       justify = "right"
     })
 
     state:set("<b>nooo</b>")
+
+    label:connect("copy-clipboard", function()
+      print("hii")
+    end)
 
     vbox:append(label)
 

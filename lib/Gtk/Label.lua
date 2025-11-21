@@ -63,7 +63,7 @@ local {
 
     lines = -1,
   }, 'gtk_label', "GtkLabel*")
-  Label
+  Label:GtkWidget
 do
   
 end

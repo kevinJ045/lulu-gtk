@@ -94,6 +94,7 @@ into_global('GtkWidgetNative', function(name)
         self.ptr = f(...)
       end
 
+      self.options = args[1]
       self.id = uuid.v4()
 
       if _class.__options_provided then
@@ -331,5 +332,43 @@ into_global('gtk_option_mapper', function(option, mapper)
 end)
 
 Gtk.State = state.State
+
+class! Gtk.Widget, {
+  init(options){
+    local options = options or {}
+    self.__event_handlers = Vec()
+    if type(options) == "table" then
+      for k, v in pairs(options) do
+        if k:sub(1, 3) == "on_" then
+          local event = k:sub(4, #k)
+          self:connect(event, v)
+          options[k] = nil
+        end
+      end
+    end
+  }
+
+  connect(signal_name, lua_fn){
+
+    self._ffi_callbacks = self._ffi_callbacks or {}
+    local ffi_cb = ffi.cast("GCallback", function(widget_ptr)
+      lua_fn(widget_ptr)
+    end)
+    table.insert(self._ffi_callbacks, ffi_cb)
+
+    Gtk.ffi.g_signal_connect_data(
+      self._ptr,
+      signal_name,
+      ffi_cb,
+      nil,
+      nil,
+      0
+    )
+    return self
+  }
+
+}
+
+into_global('GtkWidget', Gtk.Widget)
 
 return into_global('Gtk', Gtk)

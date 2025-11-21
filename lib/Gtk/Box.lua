@@ -22,7 +22,7 @@ local {
     spacing = 2
   }, 'gtk_box', 'GtkBox*')
   @GtkWidgetHandleChildren('append')
-  Box
+  Box:GtkWidget
 do
 
   @GtkWidgetOperation({
