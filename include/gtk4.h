@@ -10,6 +10,7 @@ typedef struct _GtkWidget GtkWidget;
 typedef struct _GtkWindow GtkWindow;
 typedef struct _GtkBox GtkBox;
 typedef struct _GtkLabel GtkLabel;
+typedef struct _GtkButton GtkButton;
 typedef struct _GtkOrientable GtkOrientable;
 
 typedef void (*GCallback)(GtkApplication*, gpointer);
@@ -75,3 +76,9 @@ void gtk_label_set_ellipsize(GtkLabel* label, PangoEllipsizeMode mode);
 void gtk_label_set_xalign(GtkLabel* label, float xalign);
 void gtk_label_set_yalign(GtkLabel* label, float yalign);
 void gtk_label_set_lines(GtkLabel* label, int lines);
+
+GtkWidget* gtk_button_new (void);
+GtkWidget* gtk_button_new_with_label (const char* str);
+GtkWidget* gtk_button_new_from_icon_name (const char* str);
+GtkWidget* gtk_button_new_from_icon_name (const char* str);
+void gtk_button_set_label (GtkButton* button, const char* label);

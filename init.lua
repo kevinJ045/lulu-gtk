@@ -29,9 +29,15 @@ local activate_cb = ffi.cast("GCallback",
       justify = "right"
     })
 
+    local button = Gtk.Button({
+      markup = state,
+      selectable = true,
+      justify = "right"
+    })
+
     state:set("<b>nooo</b>")
 
-    label:connect("copy-clipboard", function()
+    button:connect("clicked", function()
       print("hii")
     end)
 
