@@ -83,6 +83,15 @@ class! @into_collectible("collect") State(@default_to("") value), {
     return self
   }
 
+  toggle_from(case1, case2){
+    if self.value == case2 then
+      self:set(case1)
+    else
+      self:set(case2)
+    end
+    return self
+  }
+
   toggle_as(bool, case1, case2){
     local is_true = bool
     if instanceof(bool, State) then

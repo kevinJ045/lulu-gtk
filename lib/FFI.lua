@@ -333,6 +333,8 @@ end)
 
 Gtk.State = state.State
 
+GtkCallbackRegistry = {}
+
 class! Gtk.Widget, {
   init(options){
     local options = options or {}
@@ -349,15 +351,16 @@ class! Gtk.Widget, {
   }
 
   connect(signal_name, lua_fn){
+    GtkCallbackRegistry[self.id] = GtkCallbackRegistry[self.id] or {}
 
-    self._ffi_callbacks = self._ffi_callbacks or {}
     local ffi_cb = ffi.cast("GCallback", function(widget_ptr)
-      lua_fn(widget_ptr)
+      lua_fn(self)
     end)
-    table.insert(self._ffi_callbacks, ffi_cb)
+
+    table.insert(GtkCallbackRegistry[self.id], ffi_cb)
 
     Gtk.ffi.g_signal_connect_data(
-      self._ptr,
+      self.ptr,
       signal_name,
       ffi_cb,
       nil,

@@ -29,12 +29,14 @@ local activate_cb = ffi.cast("GCallback",
       justify = "right"
     })
 
-    state:set("<b>nooo</b>")
+    state:set("<b>Switch layout</b>")
 
-    local button = Gtk.Button()
+    local button = Gtk.Button {
+      child = label
+    }
 
     button:connect("clicked", function()
-      print("hii")
+      state2:toggle_from('vertical', 'horizontal')
     end)
 
     vbox:append(button)
