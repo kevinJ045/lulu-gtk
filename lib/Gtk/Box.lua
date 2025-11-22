@@ -1,7 +1,3 @@
-local {
-  @enum_index(0) Horizontal,
-  @enum_index(1) Vertical
-} -< Orientation
 
 local {
   @default_to('vertical')
@@ -15,7 +11,7 @@ local {
   @GtkWidgetWithOptions({
     orientation = gtk_option_mapper {
       cast = "GtkOrientable*",
-      mapper = Orientation::index,
+      mapper = GtkOrientation::index,
       at = 1,
       operation = "gtk_orientable_set_orientation"
     },
@@ -55,5 +51,3 @@ do
 end
 
 return Box
-
-

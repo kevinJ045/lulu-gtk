@@ -2,7 +2,6 @@
 local {
   @default_to("")
   #label,
-  
 } ->
   @GtkWidgetNative('gtk_button_new')
   @GtkWidgetWithOptions({
@@ -25,7 +24,6 @@ do
   })
   @GtkWidgetReturnSelf()
   function Button:set_child(child)
-    print(child)
     self.child = child
   end
 

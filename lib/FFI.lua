@@ -5,7 +5,7 @@ local Gtk = {}
 
 ---< Gtk4.so/dll >---
 ---< the dylib
--- We `use` @gtk-4, this will look for 
+-- We `use` @gtk-4, this will look for
 -- `libgtk-4.so` or `gtk-4.dll` in all
 -- relevant paths.
 ---< the gtk4.h
@@ -26,7 +26,7 @@ using {
 
 --- The interlop
 -- We pass the gtk namespace as `Gtk.ffi` for
--- direct ffi access from `Gtk` namespace. 
+-- direct ffi access from `Gtk` namespace.
 Gtk.ffi = gtk
 
 local function emmasivate_options(self, option_map, options, each, onlyif)
@@ -45,7 +45,7 @@ local function emmasivate_options(self, option_map, options, each, onlyif)
       local omap = in if self.__options_map then
         return self.__options_map[name]
       end
-      
+
       if o[name] != nil then
         self[name] = o[name]
       end
@@ -183,7 +183,7 @@ into_global('GtkWidgetWithOptions', function(...)
             if not mapper.arguments then
               mapper.arguments = {false}
             end
-            
+
             return mapper
           else
             return {
@@ -201,7 +201,7 @@ into_global('GtkWidgetWithOptions', function(...)
           do_gtk_operations(self, {val}, options)
           return self
         end
-        
+
       end
     end
     return _class
@@ -230,6 +230,16 @@ into_global('GtkWidgetHandleChildren', function(name)
   end
 end)
 
+into_global('GtkWidgetHandleChild', function(name)
+  return function(_class)
+    function _class:init()
+      if self.child then
+        self[name](self, self.child)
+      end
+    end
+    return _class
+  end
+end)
 
 into_global('GtkWidgetReturnSelf', function()
   return function(_class, func)
@@ -258,6 +268,16 @@ into_global('GtkWidgetChildrenHandler', function(idx, shift)
           self.children:push(child)
         end
       end
+      return func(self, ...)
+    end
+  end
+end)
+
+into_global('GtkWidgetChildHandler', function(idx, shift)
+  return function(_class, func)
+    return function(self, ...)
+      local child = ({...})[idx]
+      self.child = child
       return func(self, ...)
     end
   end
@@ -295,7 +315,7 @@ into_global('GtkWidgetOperation', function(options)
       if options.returns then
         return result
       end
-      
+
       return returns
     end
   end
