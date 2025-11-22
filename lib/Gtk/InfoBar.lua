@@ -12,6 +12,9 @@ local {} ->
 do
 
   function InfoBar:init(o)
+    if not self.children then
+      self.children = Vec()
+    end
     if type(o) == "table" then
       if o.child then
         self:add_child(o.child)
@@ -31,7 +34,7 @@ do
   })
   @GtkWidgetReturnSelf()
   function InfoBar:add_child(child)
-    table.insert(self.children, child)
+    self.children:push(child)
   end
 
   @GtkWidgetOperation({

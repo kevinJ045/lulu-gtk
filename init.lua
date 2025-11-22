@@ -9,7 +9,7 @@ local activate_cb = ffi.cast("GCallback",
   function(app, user_data)
     local win = Gtk.Window(app)
     win:set_title("Widget Test")
-    win:set_default_size(800, 600)
+    -- win:set_default_size(800, 600)
 
     print('window made')
 
@@ -126,8 +126,8 @@ local activate_cb = ffi.cast("GCallback",
     -- ScrolledWindow with TextView
     local scrolled_window = Gtk.ScrolledWindow()
     local text_view = Gtk.TextView()
-    local buffer = text_view:get_buffer()
-    buffer:set_text("This is a TextView inside a ScrolledWindow.", -1)
+    -- local buffer = text_view:get_buffer()
+    -- buffer:set_text("This is a TextView inside a ScrolledWindow.", -1)
     scrolled_window:set_child(text_view)
     grid:attach(scrolled_window, 0, 10, 2, 1)
 
