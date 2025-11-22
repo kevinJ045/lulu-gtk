@@ -66,7 +66,7 @@ local activate_cb = ffi.cast("GCallback",
     local revealer_button = Gtk.Button { label = "Reveal" }
     local revealer = Gtk.Revealer {
       child = Gtk.Label { text = "Revealed!" },
-      transition_type = Gtk.RevealerTransitionType.SLIDE_DOWN
+      transition_type = "slideup"
     }
     revealer_button:connect("clicked", function()
       revealer:set_reveal_child(not revealer:get_reveal_child())
@@ -76,7 +76,7 @@ local activate_cb = ffi.cast("GCallback",
 
     -- Stack and StackSidebar
     local stack = Gtk.Stack {
-      transition_type = Gtk.StackTransitionType.SLIDE_LEFT_RIGHT,
+      transition_type = "slide_leftright",
       children = {
         { widget = Gtk.Label { text = "Page 1" }, name = "page1", title = "Page 1" },
         { widget = Gtk.Label { text = "Page 2" }, name = "page2", title = "Page 2" },
@@ -87,7 +87,7 @@ local activate_cb = ffi.cast("GCallback",
     grid:attach(stack, 1, 5, 1, 1)
 
     -- Separator
-    local separator = Gtk.Separator { orientation = Gtk.Orientation.HORIZONTAL }
+    local separator = Gtk.Separator { orientation = "horizontal" }
     grid:attach(separator, 0, 6, 2, 1)
 
     -- Spinner
@@ -97,7 +97,7 @@ local activate_cb = ffi.cast("GCallback",
 
     -- InfoBar
     local info_bar = Gtk.InfoBar {
-      message_type = Gtk.MessageType.INFO,
+      message_type = "info",
       show_close_button = true,
       child = Gtk.Label { text = "This is an info bar." }
     }

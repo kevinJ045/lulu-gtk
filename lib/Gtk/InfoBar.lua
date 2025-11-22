@@ -2,7 +2,10 @@
 local {} ->
   @GtkWidgetNative('gtk_info_bar_new')
   @GtkWidgetWithOptions({
-    message_type = -1,
+    message_type = gtk_option_mapper {
+      mapper = GtkMessageType::index,
+      at = -1
+    },
     show_close_button = -1
   }, 'gtk_info_bar', "GtkInfoBar*")
   InfoBar:GtkWidget

@@ -121,6 +121,8 @@ local function do_gtk_operations(self, args, options)
       collect(args[i].ptr)
     elseif type(v) == "function" then
       collect(v(args[i]))
+    elseif type(v) == "string" then
+      collect(ffi.cast(v, args[i].ptr or args[i]))
     else
       collect(args[i])
     end
@@ -208,7 +210,7 @@ into_global('GtkWidgetWithOptions', function(...)
   end
 end)
 
-into_global('GtkWidgetHandleChildren', function(name)
+into_global('GtkWidgetHandleChildren', function(name, mapper)
   return function(_class)
     function _class:init()
       if self.child then
@@ -221,7 +223,11 @@ into_global('GtkWidgetHandleChildren', function(name)
           children = Vec(self.children)
         end
         foreach(children.items)(function(child)
-          self[name](self, child)
+          if type(mapper) == "function" then
+            self[name](self, mapper(child))
+          else
+            self[name](self, child)
+          end
         end)
         self.children = children
       end
